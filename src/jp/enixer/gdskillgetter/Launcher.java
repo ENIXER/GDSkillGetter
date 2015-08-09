@@ -1,7 +1,7 @@
 package jp.enixer.gdskillgetter;
 
-public class Lawncher {
+public class Launcher {
 	public static void main(String[] args) {
-		new Main().run();
+		new GDSkillGetter().run();
 	}
 }
