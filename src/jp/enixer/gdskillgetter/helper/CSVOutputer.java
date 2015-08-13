@@ -32,7 +32,7 @@ public class CSVOutputer {
 					List<String> line = new ArrayList<String>();
 					line.add(music.skillnoteId);
 					line.add(Integer.toString(detail.getKind()));
-					line.add(detail.achievements.value.toPlainString());
+					line.add(detail.achievements.toPlainString());
 					line.add("");
 					line.add(Boolean.toString(detail.isFullcombo));
 					printer.printRecord(line);

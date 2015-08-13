@@ -20,7 +20,7 @@ public class SkillNoteResult implements Serializable {
 
 	public final Rank rank;
 
-	public final Achievement achievements;
+	public final AchievementRate achievements;
 
 	public final BigDecimal skillpoints;
 
@@ -35,7 +35,7 @@ public class SkillNoteResult implements Serializable {
 	public final String comment;
 
 	public SkillNoteResult(Level level, Type type, Rank rank,
-			Achievement achievements, BigDecimal skillpoints,
+			AchievementRate achievements, BigDecimal skillpoints,
 			boolean isFullcombo, boolean isRandom, boolean isSuperRandom,
 			boolean isLeft, String comment) {
 		super();

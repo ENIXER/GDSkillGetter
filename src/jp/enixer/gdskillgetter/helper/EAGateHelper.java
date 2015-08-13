@@ -8,7 +8,7 @@ import java.util.regex.Pattern;
 import jp.enixer.gdskillgetter.internal.Config;
 import jp.enixer.gdskillgetter.internal.HttpClientWrapper;
 import jp.enixer.gdskillgetter.internal.RequestParams;
-import jp.enixer.gdskillgetter.model.Achievement;
+import jp.enixer.gdskillgetter.model.AchievementRate;
 import jp.enixer.gdskillgetter.model.Music;
 import jp.enixer.gdskillgetter.model.Result;
 import jp.enixer.gdskillgetter.model.ResultDetail;
@@ -87,7 +87,7 @@ public class EAGateHelper {
 					Type type = Type.getInstanceOf(dm.group(1));
 					Level level = Level.getInstanceOf(dm.group(2));
 					ResultDetail detail = new ResultDetail(result, level, type,
-							Rank.getInstanceOf(dm.group(5)), new Achievement(
+							Rank.getInstanceOf(dm.group(5)), new AchievementRate(
 									dm.group(7)));
 					detail.isFullcombo = StringUtils.isNotEmpty(dm.group(6));
 					detail.points = Integer.valueOf(dm.group(8));
@@ -147,7 +147,7 @@ public class EAGateHelper {
 					Type type = Type.D;
 					Level level = Level.getInstanceOf(dm.group(2));
 					ResultDetail detail = new ResultDetail(result, level, type,
-							Rank.getInstanceOf(dm.group(5)), new Achievement(
+							Rank.getInstanceOf(dm.group(5)), new AchievementRate(
 									dm.group(7)));
 					detail.isFullcombo = StringUtils.isNotEmpty(dm.group(6));
 					detail.points = Integer.valueOf(dm.group(8));
@@ -166,7 +166,7 @@ public class EAGateHelper {
 
 	private static void writeResultLog(Result result, ResultDetail detail) {
 		resultlog.info(result.music.eagateName + "|" + detail.level + "-"
-				+ detail.type + "|" + detail.achievements.value + "%|"
+				+ detail.type + "|" + detail.achievements.toPlainString() + "%|"
 				+ detail.getSkillPoints() + "pts|" + detail.maxcombo + "combo|"
 				+ (detail.isFullcombo ? "FC" : "") + "|" + detail.points + "|"
 				+ detail.clearCount + "|" + detail.playCount);

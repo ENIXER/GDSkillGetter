@@ -26,7 +26,7 @@ public class ResultDetail implements Serializable, Comparable<ResultDetail> {
 
 	public final Rank rank;
 
-	public final Achievement achievements;
+	public final AchievementRate achievements;
 
 	public Boolean isFullcombo;
 
@@ -39,7 +39,7 @@ public class ResultDetail implements Serializable, Comparable<ResultDetail> {
 	public Integer clearCount;
 
 	public ResultDetail(Result result, Level level, Type type, Rank rank,
-			Achievement achievements) {
+			AchievementRate achievements) {
 		super();
 		this.result = result;
 		this.level = level;
@@ -52,7 +52,7 @@ public class ResultDetail implements Serializable, Comparable<ResultDetail> {
 		if (result != null) {
 			for (Difficulty d : result.music.difficulties) {
 				if (d.level == level && d.type == type) {
-					return d.value.multiply(achievements.value)
+					return d.value.multiply(achievements)
 							.multiply(SKILL_COEFFICIENT)
 							.setScale(2, BigDecimal.ROUND_DOWN);
 				}
