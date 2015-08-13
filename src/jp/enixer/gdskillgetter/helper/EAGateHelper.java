@@ -12,7 +12,7 @@ import jp.enixer.gdskillgetter.model.AchievementRate;
 import jp.enixer.gdskillgetter.model.Music;
 import jp.enixer.gdskillgetter.model.Result;
 import jp.enixer.gdskillgetter.model.ResultDetail;
-import jp.enixer.gdskillgetter.types.Level;
+import jp.enixer.gdskillgetter.types.Difficulty;
 import jp.enixer.gdskillgetter.types.Rank;
 import jp.enixer.gdskillgetter.types.Type;
 import jp.enixer.gdskillgetter.util.Normalizer;
@@ -85,7 +85,7 @@ public class EAGateHelper {
 						continue;
 					}
 					Type type = Type.getInstanceOf(dm.group(1));
-					Level level = Level.getInstanceOf(dm.group(2));
+					Difficulty level = Difficulty.getInstanceOf(dm.group(2));
 					ResultDetail detail = new ResultDetail(result, level, type,
 							Rank.getInstanceOf(dm.group(5)), new AchievementRate(
 									dm.group(7)));
@@ -145,7 +145,7 @@ public class EAGateHelper {
 						continue;
 					}
 					Type type = Type.D;
-					Level level = Level.getInstanceOf(dm.group(2));
+					Difficulty level = Difficulty.getInstanceOf(dm.group(2));
 					ResultDetail detail = new ResultDetail(result, level, type,
 							Rank.getInstanceOf(dm.group(5)), new AchievementRate(
 									dm.group(7)));

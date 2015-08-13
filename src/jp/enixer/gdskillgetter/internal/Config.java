@@ -18,14 +18,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class Config {
-	private static final Properties properties = getPropertiesFromConfig();
+	private static Properties properties;
 	private static final Log log = LogFactory.getLog(Config.class);
 
 	private Config() {
 	}
 
-	private static Properties getPropertiesFromConfig() {
-		Properties prop = new Properties();
+	public static void getPropertiesFromConfig() {
+		properties = new Properties();
 		String fileName = new ConfigSearcher().search();
 		if (fileName == null) {
 			log.fatal("設定ファイルが見つかりません。");
@@ -35,9 +35,9 @@ public class Config {
 		InputStream in = Config.class.getResourceAsStream('/'+fileName);
 		try {
 			if (fileName.endsWith("xml")) {
-				prop.loadFromXML(in);
+				properties.loadFromXML(in);
 			} else if (fileName.endsWith("properties")) {
-				prop.load(in);
+				properties.load(in);
 			} else if (fileName.endsWith("ini")) {
 				// TODO: 独自書式の設定ファイルから設定を読み込めるようにする
 			} else {
@@ -58,7 +58,6 @@ public class Config {
 			}
 		}
 		log.info("設定の読み込みが完了しました。");
-		return prop;
 	}
 
 	public static String getProxyHost() {

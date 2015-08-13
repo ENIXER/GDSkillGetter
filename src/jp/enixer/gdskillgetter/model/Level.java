@@ -1,40 +1,36 @@
 package jp.enixer.gdskillgetter.model;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
-import jp.enixer.gdskillgetter.types.Level;
+import jp.enixer.gdskillgetter.types.Difficulty;
 import jp.enixer.gdskillgetter.types.Type;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class Difficulty implements Serializable {
+public class Level extends BigDecimal {
 
 	private static final long serialVersionUID = 1L;
 
 	public final Music music;
 
-	public final Level level;
+	public final Difficulty level;
 
 	public final Type type;
 
-	public final BigDecimal value;
-
-	public Difficulty(Music music, Level level, Type type, BigDecimal value) {
-		super();
+	public Level(Music music, Difficulty level, Type type, BigDecimal value) {
+		super(value.toPlainString());
 		this.music = music;
 		this.level = level;
 		this.type = type;
-		this.value = value;
 	}
 
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof Difficulty)) {
+		if (!(obj instanceof Level)) {
 			return false;
 		}
-		Difficulty o = (Difficulty) obj;
+		Level o = (Level) obj;
 		return music.equals(o.music) && level.equals(o.level)
 				&& type.equals(o.type);
 	}

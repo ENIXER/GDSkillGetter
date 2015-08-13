@@ -36,6 +36,7 @@ public class GDSkillGetter {
 	}
 	
 	public void start() {
+		Config.getPropertiesFromConfig();
 		eagate = new HttpClientWrapper("Windows-31J");
 		skillnote = new HttpClientWrapper("UTF-8");
 		EAGateHelper.loginEAGate(eagate);

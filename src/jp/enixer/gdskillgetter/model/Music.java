@@ -21,7 +21,7 @@ public class Music implements Serializable {
 
 	public boolean isNew;
 
-	public Set<Difficulty> difficulties = new HashSet<Difficulty>();
+	public Set<Level> difficulties = new HashSet<Level>();
 
 	@Override
 	public String toString() {

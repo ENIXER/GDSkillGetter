@@ -4,10 +4,10 @@ import static org.apache.commons.lang3.StringUtils.startsWithIgnoreCase;
 
 import org.apache.commons.lang3.StringUtils;
 
-public enum Level {
+public enum Difficulty {
 	BSC, ADV, EXT, MAS;
 
-	public static Level getInstanceOf(String name) {
+	public static Difficulty getInstanceOf(String name) {
 		if (StringUtils.isBlank(name)) {
 			throw new NullPointerException();
 		}

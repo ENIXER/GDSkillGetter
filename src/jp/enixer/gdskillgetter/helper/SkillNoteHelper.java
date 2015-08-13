@@ -9,9 +9,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import jp.enixer.gdskillgetter.internal.HttpClientWrapper;
-import jp.enixer.gdskillgetter.model.Difficulty;
+import jp.enixer.gdskillgetter.model.Level;
 import jp.enixer.gdskillgetter.model.Music;
-import jp.enixer.gdskillgetter.types.Level;
+import jp.enixer.gdskillgetter.types.Difficulty;
 import jp.enixer.gdskillgetter.types.Type;
 import jp.enixer.gdskillgetter.util.Normalizer;
 
@@ -51,67 +51,67 @@ public class SkillNoteHelper {
 				music.isNew = isNew;
 				list.put(music.name, music);
 
-				Set<Difficulty> d = music.difficulties;
+				Set<Level> d = music.difficulties;
 
 				Matcher m;
 				m = skillValuePattern.matcher(skillListMatcher.group(2));
 				if (m.find()) {
-					d.add(new Difficulty(music, Level.BSC, Type.D,
+					d.add(new Level(music, Difficulty.BSC, Type.D,
 							new BigDecimal(m.group(1))));
 				}
 				m = skillValuePattern.matcher(skillListMatcher.group(3));
 				if (m.find()) {
-					d.add(new Difficulty(music, Level.ADV, Type.D,
+					d.add(new Level(music, Difficulty.ADV, Type.D,
 							new BigDecimal(m.group(1))));
 				}
 				m = skillValuePattern.matcher(skillListMatcher.group(4));
 				if (m.find()) {
-					d.add(new Difficulty(music, Level.EXT, Type.D,
+					d.add(new Level(music, Difficulty.EXT, Type.D,
 							new BigDecimal(m.group(1))));
 				}
 				m = skillValuePattern.matcher(skillListMatcher.group(5));
 				if (m.find()) {
-					d.add(new Difficulty(music, Level.MAS, Type.D,
+					d.add(new Level(music, Difficulty.MAS, Type.D,
 							new BigDecimal(m.group(1))));
 				}
 				m = skillValuePattern.matcher(skillListMatcher.group(6));
 				if (m.find()) {
-					d.add(new Difficulty(music, Level.BSC, Type.G,
+					d.add(new Level(music, Difficulty.BSC, Type.G,
 							new BigDecimal(m.group(1))));
 				}
 				m = skillValuePattern.matcher(skillListMatcher.group(7));
 				if (m.find()) {
-					d.add(new Difficulty(music, Level.ADV, Type.G,
+					d.add(new Level(music, Difficulty.ADV, Type.G,
 							new BigDecimal(m.group(1))));
 				}
 				m = skillValuePattern.matcher(skillListMatcher.group(8));
 				if (m.find()) {
-					d.add(new Difficulty(music, Level.EXT, Type.G,
+					d.add(new Level(music, Difficulty.EXT, Type.G,
 							new BigDecimal(m.group(1))));
 				}
 				m = skillValuePattern.matcher(skillListMatcher.group(9));
 				if (m.find()) {
-					d.add(new Difficulty(music, Level.MAS, Type.G,
+					d.add(new Level(music, Difficulty.MAS, Type.G,
 							new BigDecimal(m.group(1))));
 				}
 				m = skillValuePattern.matcher(skillListMatcher.group(10));
 				if (m.find()) {
-					d.add(new Difficulty(music, Level.BSC, Type.B,
+					d.add(new Level(music, Difficulty.BSC, Type.B,
 							new BigDecimal(m.group(1))));
 				}
 				m = skillValuePattern.matcher(skillListMatcher.group(11));
 				if (m.find()) {
-					d.add(new Difficulty(music, Level.ADV, Type.B,
+					d.add(new Level(music, Difficulty.ADV, Type.B,
 							new BigDecimal(m.group(1))));
 				}
 				m = skillValuePattern.matcher(skillListMatcher.group(12));
 				if (m.find()) {
-					d.add(new Difficulty(music, Level.EXT, Type.B,
+					d.add(new Level(music, Difficulty.EXT, Type.B,
 							new BigDecimal(m.group(1))));
 				}
 				m = skillValuePattern.matcher(skillListMatcher.group(13));
 				if (m.find()) {
-					d.add(new Difficulty(music, Level.MAS, Type.B,
+					d.add(new Level(music, Difficulty.MAS, Type.B,
 							new BigDecimal(m.group(1))));
 				}
 			}

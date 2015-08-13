@@ -12,7 +12,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.params.ConnRoutePNames;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 
 public class HttpClientWrapper {
@@ -24,7 +24,7 @@ public class HttpClientWrapper {
 	private String encoding;
 
 	public HttpClientWrapper(String encoding) {
-		client = new DefaultHttpClient();
+		client = HttpClientBuilder.create().build();
 		this.encoding = encoding;
 		if (StringUtils.isNotEmpty(Config.getProxyHost())) {
 			HttpHost proxy = new HttpHost(Config.getProxyHost(),

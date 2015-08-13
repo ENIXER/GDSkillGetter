@@ -3,7 +3,7 @@ package jp.enixer.gdskillgetter.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import jp.enixer.gdskillgetter.types.Level;
+import jp.enixer.gdskillgetter.types.Difficulty;
 import jp.enixer.gdskillgetter.types.Rank;
 import jp.enixer.gdskillgetter.types.Type;
 
@@ -14,7 +14,7 @@ public class SkillNoteResult implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	public final Level level;
+	public final Difficulty level;
 
 	public final Type type;
 
@@ -34,7 +34,7 @@ public class SkillNoteResult implements Serializable {
 
 	public final String comment;
 
-	public SkillNoteResult(Level level, Type type, Rank rank,
+	public SkillNoteResult(Difficulty level, Type type, Rank rank,
 			AchievementRate achievements, BigDecimal skillpoints,
 			boolean isFullcombo, boolean isRandom, boolean isSuperRandom,
 			boolean isLeft, String comment) {

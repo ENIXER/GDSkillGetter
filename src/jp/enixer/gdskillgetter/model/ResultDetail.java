@@ -3,7 +3,7 @@ package jp.enixer.gdskillgetter.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 
-import jp.enixer.gdskillgetter.types.Level;
+import jp.enixer.gdskillgetter.types.Difficulty;
 import jp.enixer.gdskillgetter.types.Rank;
 import jp.enixer.gdskillgetter.types.Type;
 
@@ -20,7 +20,7 @@ public class ResultDetail implements Serializable, Comparable<ResultDetail> {
 
 	public final Result result;
 
-	public final Level level;
+	public final Difficulty level;
 
 	public final Type type;
 
@@ -38,7 +38,7 @@ public class ResultDetail implements Serializable, Comparable<ResultDetail> {
 
 	public Integer clearCount;
 
-	public ResultDetail(Result result, Level level, Type type, Rank rank,
+	public ResultDetail(Result result, Difficulty level, Type type, Rank rank,
 			AchievementRate achievements) {
 		super();
 		this.result = result;
@@ -50,9 +50,9 @@ public class ResultDetail implements Serializable, Comparable<ResultDetail> {
 
 	public BigDecimal getSkillPoints() {
 		if (result != null) {
-			for (Difficulty d : result.music.difficulties) {
+			for (Level d : result.music.difficulties) {
 				if (d.level == level && d.type == type) {
-					return d.value.multiply(achievements)
+					return d.multiply(achievements)
 							.multiply(SKILL_COEFFICIENT)
 							.setScale(2, BigDecimal.ROUND_DOWN);
 				}
