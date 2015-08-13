@@ -7,7 +7,7 @@ import org.junit.Test;
 
 public class SkillNoteHelperTest {
 
-	@Test
+//	@Test
 	public void test() {
 		HttpClientWrapper wrapper = new HttpClientWrapper("utf-8");
 		SkillNoteHelper.loadMusics(wrapper);

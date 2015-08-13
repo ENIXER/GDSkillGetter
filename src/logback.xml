@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE configuration>
+
+<configuration>
+	<appender name="C" class="ch.qos.logback.core.FileAppender">
+		<File>crawlerlog.txt</File>
+		<append>false</append>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>%d %-5p %m%n</pattern>
+		</encoder>
+	</appender>
+	<appender name="R" class="ch.qos.logback.core.FileAppender">
+		<File>resultlog.txt</File>
+		<append>false</append>
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+			<pattern>%m%n</pattern>
+		</encoder>
+	</appender>
+	<root>
+		<level value="INFO" />
+		<appender-ref ref="C" />
+	</root>
+	<logger name="jp.enixer.gdskillgetter.helper.EAGateHelper.Result" additivity="false">
+		<appender-ref ref="R" />
+	</logger>
+	<!--
+	<logger name="org.iceextra.xgcrawler.helper.EAGateHelper">
+		<level value="DEBUG" />
+	</logger>
+	-->
+</configuration>

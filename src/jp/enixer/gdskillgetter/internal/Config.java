@@ -40,7 +40,7 @@ public class Config {
 			throw new RuntimeException();
 		}
 		log.info("設定ファイル(" + fileName + ")を読み込みます。");
-		InputStream in = this.getClass().getResourceAsStream('/' + fileName);
+		InputStream in = Config.class.getResourceAsStream('/'+fileName);
 		try {
 			if (fileName.endsWith("xml")) {
 				properties.loadFromXML(in);
@@ -67,7 +67,7 @@ public class Config {
 		}
 		log.info("設定の読み込みが完了しました。");
 	}
-	
+
 	public String getProxyHost() {
 		return properties.getProperty("ProxyHost");
 	}

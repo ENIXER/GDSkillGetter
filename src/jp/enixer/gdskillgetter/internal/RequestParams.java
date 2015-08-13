@@ -3,8 +3,8 @@ package jp.enixer.gdskillgetter.internal;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
@@ -19,11 +19,11 @@ public class RequestParams {
 	}
 
 	public RequestParams(String name, Object value) {
-		params.add(new BasicNameValuePair(name, Objects.toString(value)));
+		params.add(new BasicNameValuePair(name, ObjectUtils.toString(value)));
 	}
 
 	public RequestParams add(String name, Object value) {
-		params.add(new BasicNameValuePair(name, Objects.toString(value)));
+		params.add(new BasicNameValuePair(name, ObjectUtils.toString(value)));
 		return this;
 	}
 

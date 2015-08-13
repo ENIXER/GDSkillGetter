@@ -41,7 +41,7 @@ public class HttpClientWrapper {
 			HttpResponse response = client.execute(request);
 			String s = IOUtils.toString(response.getEntity().getContent(),
 					encoding);
-			log.info(url + " を読み込んでいます。");
+			log.debug(url + " を読み込んでいます。");
 			EntityUtils.consume(response.getEntity());
 			return s;
 		} catch (IOException e) {
