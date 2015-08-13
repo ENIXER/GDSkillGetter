@@ -29,9 +29,8 @@ public class EAGateHelper {
 			.getName() + ".Result");
 
 	public static void loginEAGate(HttpClientWrapper client) {
-		Config config = Config.getInstance();
-		String username = config.getEAGateUsername();
-		String password = config.getEAGatePassword();
+		String username = Config.getEAGateUsername();
+		String password = Config.getEAGatePassword();
 		client.GET(EAGATE_LOGIN_URL); // 読み捨て
 		client.POST(
 				EAGATE_LOGIN_URL,

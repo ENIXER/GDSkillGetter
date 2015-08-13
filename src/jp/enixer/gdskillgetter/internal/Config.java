@@ -18,22 +18,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class Config {
-	private Properties properties = new Properties();
-	private static Config instance;
+	private static final Properties properties = getPropertiesFromConfig();
 	private static final Log log = LogFactory.getLog(Config.class);
 
 	private Config() {
-		getPropertiesFromConfig();
 	}
 
-	public static Config getInstance() {
-		if (instance == null) {
-			instance = new Config();
-		}
-		return instance;
-	}
-
-	private void getPropertiesFromConfig() {
+	private static Properties getPropertiesFromConfig() {
+		Properties prop = new Properties();
 		String fileName = new ConfigSearcher().search();
 		if (fileName == null) {
 			log.fatal("設定ファイルが見つかりません。");
@@ -43,9 +35,9 @@ public class Config {
 		InputStream in = Config.class.getResourceAsStream('/'+fileName);
 		try {
 			if (fileName.endsWith("xml")) {
-				properties.loadFromXML(in);
+				prop.loadFromXML(in);
 			} else if (fileName.endsWith("properties")) {
-				properties.load(in);
+				prop.load(in);
 			} else if (fileName.endsWith("ini")) {
 				// TODO: 独自書式の設定ファイルから設定を読み込めるようにする
 			} else {
@@ -66,43 +58,44 @@ public class Config {
 			}
 		}
 		log.info("設定の読み込みが完了しました。");
+		return prop;
 	}
 
-	public String getProxyHost() {
+	public static String getProxyHost() {
 		return properties.getProperty("ProxyHost");
 	}
 
-	public int getProxyPort() {
+	public static int getProxyPort() {
 		return NumberUtils.toInt(properties.getProperty("ProxyPort"));
 	}
 
-	public String getEAGateUsername() {
+	public static String getEAGateUsername() {
 		return properties.getProperty("EAGateUsername");
 	}
 
-	public String getEAGatePassword() {
+	public static String getEAGatePassword() {
 		return properties.getProperty("EAGatePassword");
 	}
 
-	public boolean canUpdateGf() {
+	public static boolean canUpdateGf() {
 		String updateGuitarSkill = properties.getProperty("UpdateGuitarSkill");
 		return StringUtils.isEmpty(updateGuitarSkill)
 				|| toBoolean(updateGuitarSkill);
 	}
 
-	public boolean canUpdateDm() {
+	public static boolean canUpdateDm() {
 		String updateDrumSkill = properties.getProperty("UpdateDrumSkill");
 		return StringUtils.isEmpty(updateDrumSkill)
 				|| toBoolean(updateDrumSkill);
 	}
 
-	public boolean canUpdateFullcombo() {
+	public static boolean canUpdateFullcombo() {
 		String updateFullcombo = properties.getProperty("UpdateFullcombo");
 		return StringUtils.isNotEmpty(updateFullcombo)
 				&& toBoolean(updateFullcombo);
 	}
 
-	private class ConfigSearcher {
+	private static class ConfigSearcher {
 		/**
 		 * 設定ファイルのファイル名を表す正規表現。設定ファイル名はconfigを含む文字列で、拡張子が.xml、.properties、.ini
 		 * のいずれかになっていることを期待する。

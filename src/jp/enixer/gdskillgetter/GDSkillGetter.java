@@ -20,18 +20,16 @@ public class GDSkillGetter {
 	
 	private HttpClientWrapper eagate;
 	private boolean started = false;
-	private Config config;
 	protected HttpClientWrapper skillnote;
 
 	public void run() {
 		log.info("GDSkillGetterを起動します.");
 		start();
-		config = Config.getInstance();
-		if (config.canUpdateGf()) {
+		if (Config.canUpdateGf()) {
 			Map<String, Result> gfResults = getGFAllMusics();
 			CSVOutputer.output(gfResults, "gf");
 		}
-		if (config.canUpdateDm()) {
+		if (Config.canUpdateDm()) {
 			Map<String, Result> dmResults = getDMAllMusics();
 			CSVOutputer.output(dmResults, "dm");
 		}
@@ -50,7 +48,7 @@ public class GDSkillGetter {
 		}
 		Map<String, Music> musics = SkillNoteHelper.loadMusics(skillnote);
 		Map<String, Result> results = EAGateHelper.getGfAllResult(eagate,
-				musics, config.canUpdateFullcombo());
+				musics, Config.canUpdateFullcombo());
 		mergeResult(results, musics);
 //		SkillNoteHelper.mergeGfSkillNoteResult(skillnote, config, results);
 
@@ -63,7 +61,7 @@ public class GDSkillGetter {
 		}
 		Map<String, Music> musics = SkillNoteHelper.loadMusics(skillnote);
 		Map<String, Result> results = EAGateHelper.getDmAllResult(eagate,
-				musics, config.canUpdateFullcombo());
+				musics, Config.canUpdateFullcombo());
 		mergeResult(results, musics);
 //		SkillNoteHelper.mergeDmSkillNoteResult(skillnote, config, results);
 

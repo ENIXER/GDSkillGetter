@@ -24,12 +24,11 @@ public class HttpClientWrapper {
 	private String encoding;
 
 	public HttpClientWrapper(String encoding) {
-		Config config = Config.getInstance();
 		client = new DefaultHttpClient();
 		this.encoding = encoding;
-		if (StringUtils.isNotEmpty(config.getProxyHost())) {
-			HttpHost proxy = new HttpHost(config.getProxyHost(),
-					config.getProxyPort());
+		if (StringUtils.isNotEmpty(Config.getProxyHost())) {
+			HttpHost proxy = new HttpHost(Config.getProxyHost(),
+					Config.getProxyPort());
 			client.getParams().setParameter(ConnRoutePNames.DEFAULT_PROXY,
 					proxy);
 		}
