@@ -6,9 +6,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.InvalidPropertiesFormatException;
-import java.util.LinkedList;
 import java.util.Properties;
-import java.util.Queue;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -32,7 +30,7 @@ public class Config {
 			throw new RuntimeException();
 		}
 		log.info("設定ファイル(" + fileName + ")を読み込みます。");
-		InputStream in = Config.class.getResourceAsStream('/'+fileName);
+		InputStream in = Config.class.getResourceAsStream('/' + fileName);
 		try {
 			if (fileName.endsWith("xml")) {
 				properties.loadFromXML(in);
@@ -111,22 +109,16 @@ public class Config {
 		 */
 		public String search() {
 			Pattern pattern = Pattern.compile(PATTERN);
-			Queue<File> files = new LinkedList<File>();
-			files.add(new File("./"));
-			while (!files.isEmpty()) {
-				File file = files.poll();
+			File root = new File("./");
+			for (File file : root.listFiles()) {
 				if (file.isFile()) {
 					Matcher matcher = pattern.matcher(file.getName());
 					if (matcher.matches()) {
 						return file.getName();
 					}
-				} else {
-					for (File f : file.listFiles()) {
-						files.add(f);
-					}
 				}
 			}
-			return null;
+			return "config.xml";
 		}
 	}
 

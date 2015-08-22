@@ -26,4 +26,18 @@ public enum Difficulty {
 		return null;
 	}
 
+	public int getKind() {
+		switch (this) {
+		case MAS:
+			return 3;
+		case EXT:
+			return 2;
+		case ADV:
+			return 1;
+		case BSC:
+			return 0;
+		}
+		return -1;
+	}
+
 }

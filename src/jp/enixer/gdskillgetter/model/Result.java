@@ -1,44 +1,21 @@
 package jp.enixer.gdskillgetter.model;
 
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class Result implements Comparable<Result>{
+public class Result implements Comparable<Result> {
+	private Chart chart;
+	private ResultDetail detail = new ResultDetail();
 
-	private static final long serialVersionUID = 1L;
-
-	public Music music;
-
-	public SkillNoteResult skillNoteResult;
-
-	public Set<ResultDetail> details = new TreeSet<ResultDetail>();
-
-	public ResultDetail getSkillTargetDetail() {
-		if (!((TreeSet<ResultDetail>) details).isEmpty()) {
-			return ((TreeSet<ResultDetail>) details).first();
-		}
-		return null;
-	}
-
+	@Override
 	public int compareTo(Result o) {
 		if (o == null) {
 			return 1;
 		}
-		ResultDetail o1 = getSkillTargetDetail();
-		ResultDetail o2 = o.getSkillTargetDetail();
-		if (o1 == null && o2 == null) {
-			return 0;
-		}
-		if (o1 != null && o2 == null) {
-			return 1;
-		}
-		if (o1 == null && o2 != null) {
-			return -1;
-		}
-		return o1.compareTo(o2);
+		return detail.compareTo(o.detail);
 	}
 
 	@Override
@@ -47,5 +24,28 @@ public class Result implements Comparable<Result>{
 				ToStringStyle.MULTI_LINE_STYLE);
 	}
 
+	public double getSkillPoint() {
+		return detail.getSkillPoint();
+	}
+
+	public List<String> getOutputs() {
+		List<String> list = new ArrayList<String>();
+		list.addAll(chart.toCSVString());
+		list.addAll(detail.toCSVString());
+		return list;
+	}
+
+	public void merge(LevelData level, ResultData result) {
+		chart = level.getChart();
+		detail.merge(level, result);
+	}
+
+	public boolean isGf() {
+		return chart.isGf();
+	}
+
+	public boolean isDm() {
+		return chart.isDm();
+	}
 
 }

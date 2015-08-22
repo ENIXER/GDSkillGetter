@@ -21,4 +21,16 @@ public enum Type {
 		return null;
 	}
 
+	public int getKind() {
+		switch (this) {
+		case G:
+			return 4;
+		case B:
+			return 8;
+		case D:
+			return 0;
+		}
+		return -1;
+	}
+
 }

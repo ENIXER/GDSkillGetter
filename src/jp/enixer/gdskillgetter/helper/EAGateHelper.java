@@ -1,21 +1,17 @@
 package jp.enixer.gdskillgetter.helper;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import jp.enixer.gdskillgetter.internal.Config;
 import jp.enixer.gdskillgetter.internal.HttpClientWrapper;
 import jp.enixer.gdskillgetter.internal.RequestParams;
-import jp.enixer.gdskillgetter.model.AchievementRate;
-import jp.enixer.gdskillgetter.model.Music;
-import jp.enixer.gdskillgetter.model.Result;
-import jp.enixer.gdskillgetter.model.ResultDetail;
+import jp.enixer.gdskillgetter.model.ResultData;
 import jp.enixer.gdskillgetter.types.Difficulty;
 import jp.enixer.gdskillgetter.types.Rank;
 import jp.enixer.gdskillgetter.types.Type;
-import jp.enixer.gdskillgetter.util.Normalizer;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -43,59 +39,31 @@ public class EAGateHelper {
 		log.info("eAMUSEMENT にログイン完了。");
 	}
 
-	public static Map<String, Result> getGfAllResult(HttpClientWrapper client,
-			Map<String, Music> musics, boolean canUpdateFullcombo) {
-		Map<String, Result> list = new LinkedHashMap<String, Result>();
+	public static List<ResultData> getGfAllResult(HttpClientWrapper client,
+			boolean canUpdateFullcombo) {
+		List<ResultData> list = new ArrayList<ResultData>();
 		log.info("eAMUSEMENT から GuitarFreaks プレーデータを読み込みます.");
 
 		for (int i = 0; i < LOOP_COUNT; i++) {
 			String contents = client.GET(EAGATE_GF_PLAYDATA_LIST_URL + i);
 			Matcher gfResultListMatcher = gfResultListPattern.matcher(contents);
 			while (gfResultListMatcher.find()) {
-
 				String musicName = gfResultListMatcher.group(3);
-				Music music = musics.get(Normalizer
-						.normalizeMusicName(musicName));
-				if (music == null) {
-					continue;
-				}
-				music.eagateName = musicName;
-				Result result = new Result();
-				result.music = music;
-				list.put(music.name, result);
 
 				String resultContents = client.GET(EAGATE_GF_DETAILRESULT_URL
 						+ gfResultListMatcher.group(2) + "&index="
 						+ gfResultListMatcher.group(1));
 
-				Matcher dmn = resultDetailMusicNamePattern
-						.matcher(resultContents);
-				if (!dmn.find()) {
-					warnResult(result, Type.G);
-					continue;
-				}
-				if (!musicName.equals(dmn.group(1))) {
-					warnResult(result, Type.G, dmn.group(1));
+				if (cannotMatchMusicName(resultContents, musicName)) {
 					continue;
 				}
 
 				Matcher dm = resultDetailGfPattern.matcher(resultContents);
 				while (dm.find()) {
-					if(Integer.valueOf(dm.group(3)).equals(new Integer(0))){
-						continue;
+					ResultData data = createResultData(dm, musicName);
+					if (data != null) {
+						list.add(data);
 					}
-					Type type = Type.getInstanceOf(dm.group(1));
-					Difficulty level = Difficulty.getInstanceOf(dm.group(2));
-					ResultDetail detail = new ResultDetail(result, level, type,
-							Rank.getInstanceOf(dm.group(5)), new AchievementRate(
-									dm.group(7)));
-					detail.isFullcombo = StringUtils.isNotEmpty(dm.group(6));
-					detail.points = Integer.valueOf(dm.group(8));
-					detail.maxcombo = Integer.valueOf(dm.group(9));
-					detail.playCount = Integer.valueOf(dm.group(3));
-					detail.clearCount = Integer.valueOf(dm.group(4));
-					result.details.add(detail);
-					writeResultLog(result, detail);
 				}
 			}
 		}
@@ -104,9 +72,9 @@ public class EAGateHelper {
 		return list;
 	}
 
-	public static Map<String, Result> getDmAllResult(HttpClientWrapper client,
-			Map<String, Music> musics, boolean canUpdateFullcombo) {
-		Map<String, Result> list = new LinkedHashMap<String, Result>();
+	public static List<ResultData> getDmAllResult(HttpClientWrapper client,
+			boolean canUpdateFullcombo) {
+		List<ResultData> list = new ArrayList<ResultData>();
 		log.info("eAMUSEMENT から DrumMania プレーデータを読み込みます.");
 
 		for (int i = 0; i < LOOP_COUNT; i++) {
@@ -114,48 +82,21 @@ public class EAGateHelper {
 			Matcher dmResultListMatcher = dmResultListPattern.matcher(contents);
 			while (dmResultListMatcher.find()) {
 				String musicName = dmResultListMatcher.group(3);
-				Music music = musics.get(Normalizer
-						.normalizeMusicName(musicName));
-				if (music == null) {
-					continue;
-				}
-				music.eagateName = musicName;
-				Result result = new Result();
-				result.music = music;
-				list.put(music.name, result);
 
 				String resultContents = client.GET(EAGATE_DM_DETAILRESULT_URL
 						+ dmResultListMatcher.group(2) + "&index="
 						+ dmResultListMatcher.group(1));
 
-				Matcher dmn = resultDetailMusicNamePattern
-						.matcher(resultContents);
-				if (!dmn.find()) {
-					warnResult(result, Type.D);
-					continue;
-				}
-				if (!musicName.equals(dmn.group(1))) {
-					warnResult(result, Type.D, dmn.group(1));
+				if (cannotMatchMusicName(resultContents, musicName)) {
 					continue;
 				}
 
 				Matcher dm = resultDetailDmPattern.matcher(resultContents);
 				while (dm.find()) {
-					if(Integer.valueOf(dm.group(3)).equals(new Integer(0))){
-						continue;
+					ResultData data = createResultData(dm, musicName);
+					if (data != null) {
+						list.add(data);
 					}
-					Type type = Type.D;
-					Difficulty level = Difficulty.getInstanceOf(dm.group(2));
-					ResultDetail detail = new ResultDetail(result, level, type,
-							Rank.getInstanceOf(dm.group(5)), new AchievementRate(
-									dm.group(7)));
-					detail.isFullcombo = StringUtils.isNotEmpty(dm.group(6));
-					detail.points = Integer.valueOf(dm.group(8));
-					detail.maxcombo = Integer.valueOf(dm.group(9));
-					detail.playCount = Integer.valueOf(dm.group(3));
-					detail.clearCount = Integer.valueOf(dm.group(4));
-					result.details.add(detail);
-					writeResultLog(result, detail);
 				}
 			}
 		}
@@ -164,24 +105,61 @@ public class EAGateHelper {
 		return list;
 	}
 
-	private static void writeResultLog(Result result, ResultDetail detail) {
-		resultlog.info(result.music.eagateName + "|" + detail.level + "-"
-				+ detail.type + "|" + detail.achievements.toPlainString() + "%|"
-				+ detail.getSkillPoints() + "pts|" + detail.maxcombo + "combo|"
-				+ (detail.isFullcombo ? "FC" : "") + "|" + detail.points + "|"
-				+ detail.clearCount + "|" + detail.playCount);
+	private static boolean cannotMatchMusicName(String resultContents,
+			String musicName) {
+		Matcher dmn = resultDetailMusicNamePattern.matcher(resultContents);
+		if (!dmn.find()) {
+			warnResult(musicName);
+			return true;
+		}
+		if (!musicName.equals(dmn.group(1))) {
+			warnResult(musicName, dmn.group(1));
+			return true;
+		}
+		return false;
 	}
 
-	private static void warnResult(Result result, Type type) {
+	private static ResultData createResultData(Matcher dm, String musicName) {
+		if (Integer.parseInt(dm.group(3)) == 0) {
+			return null;
+		}
+		String t = dm.group(1);
+		Type type = Type.getInstanceOf(t.equals("") ? "DRUM" : t);
+		Difficulty difficulty = Difficulty.getInstanceOf(dm.group(2));
+		int kind = type.getKind() + difficulty.getKind();
+		Rank rank = Rank.getInstanceOf(dm.group(5));
+		String achievement = dm.group(7);
+		double achievementRate = 0;
+		if (achievement.equals("MAX")) {
+			achievementRate = 100;
+		} else if (achievement.equals("NO")) {
+			achievementRate = 0;
+		} else {
+			achievementRate = Double.parseDouble(achievement);
+		}
+		boolean isFullcombo = StringUtils.isNotEmpty(dm.group(6));
+		int points = Integer.parseInt(dm.group(8));
+		int maxcombo = Integer.parseInt(dm.group(9));
+		int playCount = Integer.parseInt(dm.group(3));
+		int clearCount = Integer.parseInt(dm.group(4));
+		resultlog.info(musicName + "|" + difficulty + "-" + type + "|"
+				+ achievementRate + "%|" + maxcombo + "combo|"
+				+ (isFullcombo ? "FC" : "") + "|" + points + "|" + clearCount
+				+ "|" + playCount);
+		return new ResultData(musicName, kind, rank, achievementRate,
+				isFullcombo, maxcombo, points, playCount, clearCount);
+	}
+
+	private static void warnResult(String musicName) {
 		if (log.isWarnEnabled()) {
-			log.warn(result.music.eagateName + " のプレーデータが正常に読み込めません.");
+			log.warn(musicName + " のプレーデータが正常に読み込めません.");
 		}
 	}
 
-	private static void warnResult(Result result, Type type, String musicName) {
+	private static void warnResult(String musicName, String resultContentsName) {
 		if (log.isWarnEnabled()) {
-			log.warn(result.music.eagateName + " のプレーデータが正常に読み込めません. ("
-					+ musicName + " を取得した模様)");
+			log.warn(musicName + " のプレーデータが正常に読み込めません. (" + resultContentsName
+					+ " を取得した模様)");
 		}
 	}
 

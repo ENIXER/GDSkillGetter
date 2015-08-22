@@ -1,23 +1,23 @@
 package jp.enixer.gdskillgetter;
 
-import java.util.Map;
-import java.util.Map.Entry;
+import java.util.List;
 
-import jp.enixer.gdskillgetter.helper.CSVOutputer;
+import jp.enixer.gdskillgetter.helper.CSVOutputter;
 import jp.enixer.gdskillgetter.helper.EAGateHelper;
 import jp.enixer.gdskillgetter.helper.SkillNoteHelper;
 import jp.enixer.gdskillgetter.internal.Config;
 import jp.enixer.gdskillgetter.internal.HttpClientWrapper;
+import jp.enixer.gdskillgetter.model.LevelData;
 import jp.enixer.gdskillgetter.model.Music;
-import jp.enixer.gdskillgetter.model.Result;
+import jp.enixer.gdskillgetter.model.ResultData;
+import jp.enixer.gdskillgetter.model.Musics;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class GDSkillGetter {
 	private static final Log log = LogFactory.getLog(GDSkillGetter.class);
-	
+
 	private HttpClientWrapper eagate;
 	private boolean started = false;
 	protected HttpClientWrapper skillnote;
@@ -25,16 +25,25 @@ public class GDSkillGetter {
 	public void run() {
 		log.info("GDSkillGetterを起動します.");
 		start();
+		List<LevelData> levelTable = SkillNoteHelper.loadMusics(skillnote);
+		List<ResultData> resultTable = null;
 		if (Config.canUpdateGf()) {
-			Map<String, Result> gfResults = getGFAllMusics();
-			CSVOutputer.output(gfResults, "gf");
+			List<ResultData> gfResults = getGFAllMusics();
+			resultTable = gfResults;
 		}
 		if (Config.canUpdateDm()) {
-			Map<String, Result> dmResults = getDMAllMusics();
-			CSVOutputer.output(dmResults, "dm");
+			List<ResultData> dmResults = getDMAllMusics();
+			if (resultTable == null) {
+				resultTable = dmResults;
+			} else {
+				resultTable.addAll(dmResults);
+			}
 		}
+		List<Music> musics = Musics.mergeTables(levelTable, resultTable);
+		CSVOutputter.output(musics);
+		end();
 	}
-	
+
 	public void start() {
 		Config.getPropertiesFromConfig();
 		eagate = new HttpClientWrapper("Windows-31J");
@@ -43,46 +52,31 @@ public class GDSkillGetter {
 		started = true;
 	}
 
-	public Map<String, Result> getGFAllMusics() {
+	public void end() {
+		started = false;
+		EAGateHelper.logoutEAGate(eagate);
+		eagate.shutdown();
+		skillnote.shutdown();
+	}
+
+	public List<ResultData> getGFAllMusics() {
 		if (!started) {
 			return null;
 		}
-		Map<String, Music> musics = SkillNoteHelper.loadMusics(skillnote);
-		Map<String, Result> results = EAGateHelper.getGfAllResult(eagate,
-				musics, Config.canUpdateFullcombo());
-		mergeResult(results, musics);
-//		SkillNoteHelper.mergeGfSkillNoteResult(skillnote, config, results);
+		List<ResultData> results = EAGateHelper.getGfAllResult(
+				eagate, Config.canUpdateFullcombo());
 
 		return results;
 	}
 
-	public Map<String, Result> getDMAllMusics() {
+	public List<ResultData> getDMAllMusics() {
 		if (!started) {
 			return null;
 		}
-		Map<String, Music> musics = SkillNoteHelper.loadMusics(skillnote);
-		Map<String, Result> results = EAGateHelper.getDmAllResult(eagate,
-				musics, Config.canUpdateFullcombo());
-		mergeResult(results, musics);
-//		SkillNoteHelper.mergeDmSkillNoteResult(skillnote, config, results);
+		List<ResultData> results = EAGateHelper.getDmAllResult(
+				eagate, Config.canUpdateFullcombo());
 
 		return results;
-	}
-
-	public void mergeResult(Map<String, Result> results,
-			Map<String, Music> musics) {
-		for (Entry<String, Result> _result : results.entrySet()) {
-			Result result = _result.getValue();
-			for (Entry<String, Music> entry : musics.entrySet()) {
-				Music music = entry.getValue();
-				if (StringUtils.equals(music.name, result.music.name)) {
-					result.music.skillnoteId = music.skillnoteId;
-					result.music.skillnoteName = music.skillnoteName;
-					result.music.isNew = music.isNew;
-					result.music.difficulties.addAll(music.difficulties);
-				}
-			}
-		}
 	}
 
 }

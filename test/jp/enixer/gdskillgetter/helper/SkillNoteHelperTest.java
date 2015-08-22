@@ -10,7 +10,6 @@ public class SkillNoteHelperTest {
 //	@Test
 	public void test() {
 		HttpClientWrapper wrapper = new HttpClientWrapper("utf-8");
-		SkillNoteHelper.loadMusics(wrapper);
 	}
 
 }

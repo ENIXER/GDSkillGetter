@@ -1,78 +1,22 @@
 package jp.enixer.gdskillgetter.model;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
-import jp.enixer.gdskillgetter.types.Difficulty;
 import jp.enixer.gdskillgetter.types.Rank;
-import jp.enixer.gdskillgetter.types.Type;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-public class ResultDetail implements Serializable, Comparable<ResultDetail> {
-
-	private static final long serialVersionUID = 1L;
-
-	private static final BigDecimal SKILL_COEFFICIENT = new BigDecimal("0.2");
-
-	private static final BigDecimal ZERO = new BigDecimal("0.0");
-
-	public final Result result;
-
-	public final Difficulty level;
-
-	public final Type type;
-
-	public final Rank rank;
-
-	public final AchievementRate achievements;
-
-	public Boolean isFullcombo;
-
-	public Integer maxcombo;
-
-	public Integer points;
-
-	public Integer playCount;
-
-	public Integer clearCount;
-
-	public ResultDetail(Result result, Difficulty level, Type type, Rank rank,
-			AchievementRate achievements) {
-		super();
-		this.result = result;
-		this.level = level;
-		this.type = type;
-		this.rank = rank;
-		this.achievements = achievements;
-	}
-
-	public BigDecimal getSkillPoints() {
-		if (result != null) {
-			for (Level d : result.music.difficulties) {
-				if (d.level == level && d.type == type) {
-					return d.multiply(achievements)
-							.multiply(SKILL_COEFFICIENT)
-							.setScale(2, BigDecimal.ROUND_DOWN);
-				}
-			}
-		}
-		return ZERO;
-	}
-
-	public int compareTo(ResultDetail o) {
-		int compared = getSkillPoints().compareTo(o.getSkillPoints());
-		if (compared != 0) {
-			return -compared;
-		}
-		int comparedByLevel = -(level.compareTo(o.level));
-		if (comparedByLevel != 0) {
-			return comparedByLevel;
-		}
-		int comparedByType = type.compareTo(o.type);
-		return comparedByType;
-	}
+public class ResultDetail implements Comparable<ResultDetail> {
+	private Rank rank;
+	private double achievementRate;
+	private double skillpoint;
+	private boolean isFullcombo;
+	private int maxcombo;
+	private int points;
+	private int playCount;
+	private int clearCount;
 
 	@Override
 	public String toString() {
@@ -80,31 +24,38 @@ public class ResultDetail implements Serializable, Comparable<ResultDetail> {
 				ToStringStyle.MULTI_LINE_STYLE);
 	}
 
-	public int getKind() {
-		int kind = 0;
-		switch (level) {
-		case MAS:
-			kind++;
-		case EXT:
-			kind++;
-		case ADV:
-			kind++;
-		case BSC:
-			break;
-		default:
-			break;
+	public double getSkillPoint() {
+		return skillpoint;
+	}
+
+	public int compareTo(ResultDetail o) {
+		double diff = o.skillpoint - skillpoint;
+		if (diff < 0) {
+			return -1;
 		}
-		switch (type) {
-		case B:
-			kind += 4;
-		case G:
-			kind += 4;
-		case D:
-			break;
-		default:
-			break;
+		if (diff > 0) {
+			return 1;
 		}
-		return kind;
+		return 0;
+	}
+
+	public List<String> toCSVString() {
+		List<String> result = new ArrayList<String>();
+		result.add(Double.toString(achievementRate));
+		result.add("");
+		result.add(Boolean.toString(isFullcombo));
+		return result;
+	}
+
+	public void merge(LevelData level, ResultData result) {
+		rank = result.getRank();
+		achievementRate = result.getAchievementRate();
+		skillpoint = 20 * level.getLevel() * achievementRate / 100;
+		isFullcombo = result.isFullcombo();
+		maxcombo = result.getMaxcombo();
+		points = result.getPoints();
+		playCount = result.getPlayCount();
+		clearCount = result.getClearCount();
 	}
 
 }

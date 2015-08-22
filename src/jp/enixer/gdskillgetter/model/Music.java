@@ -1,32 +1,73 @@
 package jp.enixer.gdskillgetter.model;
 
-import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
-import org.apache.commons.lang3.builder.ToStringBuilder;
-import org.apache.commons.lang3.builder.ToStringStyle;
+public class Music implements Comparable<Music> {
+	private MusicName musicName = new MusicName();
+	private Results results = new Results();
+	private String skillnoteId;
 
-public class Music implements Serializable {
+	public MusicName getMusicName() {
+		return musicName;
+	}
 
-	private static final long serialVersionUID = 1L;
+	public void setMusicName(MusicName musicName) {
+		this.musicName = musicName;
+	}
 
-	public String name;
+	public Results getResults() {
+		return results;
+	}
 
-	public String eagateName;
-
-	public String skillnoteName;
-
-	public String skillnoteId;
-
-	public boolean isNew;
-
-	public Set<Level> difficulties = new HashSet<Level>();
+	public void setResults(Results results) {
+		this.results = results;
+	}
 
 	@Override
-	public String toString() {
-		return ToStringBuilder.reflectionToString(this,
-				ToStringStyle.MULTI_LINE_STYLE);
+	public int compareTo(Music o) {
+		if (o == null) {
+			return -1;
+		}
+		return musicName.compareTo(o.musicName);
+	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof Music)) {
+			return false;
+		}
+		Music music = (Music) o;
+		return musicName.equals(music.musicName);
+	}
+
+	public List<List<String>> getOutputs() {
+		List<List<String>> result = new ArrayList<List<String>>();
+		List<String> gfOutputs = results.getGfAllOutputs();
+		if (gfOutputs != null) {
+			List<String> gfResult = new ArrayList<String>();
+			gfResult.add(skillnoteId);
+			gfResult.addAll(gfOutputs);
+			result.add(gfResult);
+		}
+		List<String> dmOutputs = results.getDmAllOutputs();
+		if (dmOutputs != null) {
+			List<String> dmResult = new ArrayList<String>();
+			dmResult.add(skillnoteId);
+			dmResult.addAll(dmOutputs);
+			result.add(dmResult);
+		}
+		return result;
+	}
+
+	public boolean isName(LevelData level) {
+		return musicName.isName(level);
+	}
+
+	public void merge(LevelData level, ResultData result) {
+		skillnoteId = level.getSkillnoteId();
+		musicName.merge(level, result);
+		results.merge(level, result);
 	}
 
 }
