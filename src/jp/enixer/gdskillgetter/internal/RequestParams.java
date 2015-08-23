@@ -14,10 +14,6 @@ public class RequestParams {
 
 	private List<NameValuePair> params = new ArrayList<NameValuePair>();
 
-	public RequestParams() {
-
-	}
-
 	public RequestParams(String name, Object value) {
 		params.add(new BasicNameValuePair(name, ObjectUtils.toString(value)));
 	}
@@ -38,6 +34,5 @@ public class RequestParams {
 			throw new RuntimeException(e);
 		}
 	}
-
 
 }

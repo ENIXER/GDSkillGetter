@@ -11,6 +11,7 @@ import jp.enixer.gdskillgetter.model.LevelData;
 import jp.enixer.gdskillgetter.model.Music;
 import jp.enixer.gdskillgetter.model.ResultData;
 import jp.enixer.gdskillgetter.model.Musics;
+import jp.enixer.gdskillgetter.util.LogMessage;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -23,7 +24,7 @@ public class GDSkillGetter {
 	protected HttpClientWrapper skillnote;
 
 	public void run() {
-		log.info("GDSkillGetterを起動します.");
+		log.info(LogMessage.startGDSkillGetter());
 		start();
 		List<LevelData> levelTable = SkillNoteHelper.loadMusics(skillnote);
 		List<ResultData> resultTable = null;
@@ -63,8 +64,8 @@ public class GDSkillGetter {
 		if (!started) {
 			return null;
 		}
-		List<ResultData> results = EAGateHelper.getGfAllResult(
-				eagate, Config.canUpdateFullcombo());
+		List<ResultData> results = EAGateHelper.getGfAllResult(eagate,
+				Config.canUpdateFullcombo());
 
 		return results;
 	}
@@ -73,8 +74,8 @@ public class GDSkillGetter {
 		if (!started) {
 			return null;
 		}
-		List<ResultData> results = EAGateHelper.getDmAllResult(
-				eagate, Config.canUpdateFullcombo());
+		List<ResultData> results = EAGateHelper.getDmAllResult(eagate,
+				Config.canUpdateFullcombo());
 
 		return results;
 	}

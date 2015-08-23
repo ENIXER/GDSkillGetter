@@ -22,15 +22,16 @@ public enum Type {
 	}
 
 	public int getKind() {
+		int kind = 0;
 		switch (this) {
-		case G:
-			return 4;
 		case B:
-			return 8;
+			kind += 4;
+		case G:
+			kind += 4;
 		case D:
-			return 0;
+			break;
 		}
-		return -1;
+		return kind;
 	}
 
 }

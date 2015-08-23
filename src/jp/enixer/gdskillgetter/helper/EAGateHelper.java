@@ -3,7 +3,6 @@ package jp.enixer.gdskillgetter.helper;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import jp.enixer.gdskillgetter.internal.Config;
 import jp.enixer.gdskillgetter.internal.HttpClientWrapper;
@@ -12,6 +11,9 @@ import jp.enixer.gdskillgetter.model.ResultData;
 import jp.enixer.gdskillgetter.types.Difficulty;
 import jp.enixer.gdskillgetter.types.Rank;
 import jp.enixer.gdskillgetter.types.Type;
+import jp.enixer.gdskillgetter.util.LogMessage;
+import jp.enixer.gdskillgetter.util.HTMLPattern;
+import jp.enixer.gdskillgetter.util.URL;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -27,30 +29,31 @@ public class EAGateHelper {
 	public static void loginEAGate(HttpClientWrapper client) {
 		String username = Config.getEAGateUsername();
 		String password = Config.getEAGatePassword();
-		client.GET(EAGATE_LOGIN_URL); // 読み捨て
+		client.GET(URL.loginEAGate());
 		client.POST(
-				EAGATE_LOGIN_URL,
+				URL.loginEAGate(),
 				new RequestParams("KID", username).add("pass", password).add(
 						"OTP", ""));
-		if (!isLoginSuccessful(username, client.GET(EAGATE_INDEX_URL))) {
-			log.error("eAMUSEMENT にログインできませんでした.");
+		if (!isLoginSuccessful(username, client.GET(URL.EAGateIndex()))) {
+			log.error(LogMessage.cannotLoginEAGate());
 			throw new RuntimeException();
 		}
-		log.info("eAMUSEMENT にログイン完了。");
+		log.info(LogMessage.loginEAGateSuccessful());
 	}
 
 	public static List<ResultData> getGfAllResult(HttpClientWrapper client,
 			boolean canUpdateFullcombo) {
 		List<ResultData> list = new ArrayList<ResultData>();
-		log.info("eAMUSEMENT から GuitarFreaks プレーデータを読み込みます.");
+		log.info(LogMessage.loadFromEAGate(Type.G));
 
 		for (int i = 0; i < LOOP_COUNT; i++) {
-			String contents = client.GET(EAGATE_GF_PLAYDATA_LIST_URL + i);
-			Matcher gfResultListMatcher = gfResultListPattern.matcher(contents);
+			String contents = client.GET(URL.EAGatePlaydataList(Type.G) + i);
+			Matcher gfResultListMatcher = HTMLPattern.getResultListPattern(
+					Type.G).matcher(contents);
 			while (gfResultListMatcher.find()) {
 				String musicName = gfResultListMatcher.group(3);
 
-				String resultContents = client.GET(EAGATE_GF_DETAILRESULT_URL
+				String resultContents = client.GET(URL.EAGateDetailResultList(Type.G)
 						+ gfResultListMatcher.group(2) + "&index="
 						+ gfResultListMatcher.group(1));
 
@@ -58,7 +61,8 @@ public class EAGateHelper {
 					continue;
 				}
 
-				Matcher dm = resultDetailGfPattern.matcher(resultContents);
+				Matcher dm = HTMLPattern.getResultDetailPattern(Type.G)
+						.matcher(resultContents);
 				while (dm.find()) {
 					ResultData data = createResultData(dm, musicName);
 					if (data != null) {
@@ -68,22 +72,23 @@ public class EAGateHelper {
 			}
 		}
 
-		log.info("eAMUSEMENT から GuitarFreaks プレーデータを読み込みました.");
+		log.info(LogMessage.loadEndFromEAGate(Type.G));
 		return list;
 	}
 
 	public static List<ResultData> getDmAllResult(HttpClientWrapper client,
 			boolean canUpdateFullcombo) {
 		List<ResultData> list = new ArrayList<ResultData>();
-		log.info("eAMUSEMENT から DrumMania プレーデータを読み込みます.");
+		log.info(LogMessage.loadFromEAGate(Type.D));
 
 		for (int i = 0; i < LOOP_COUNT; i++) {
-			String contents = client.GET(EAGATE_DM_PLAYDATA_LIST_URL + i);
-			Matcher dmResultListMatcher = dmResultListPattern.matcher(contents);
+			String contents = client.GET(URL.EAGatePlaydataList(Type.D) + i);
+			Matcher dmResultListMatcher = HTMLPattern.getResultListPattern(
+					Type.D).matcher(contents);
 			while (dmResultListMatcher.find()) {
 				String musicName = dmResultListMatcher.group(3);
 
-				String resultContents = client.GET(EAGATE_DM_DETAILRESULT_URL
+				String resultContents = client.GET(URL.EAGateDetailResultList(Type.D)
 						+ dmResultListMatcher.group(2) + "&index="
 						+ dmResultListMatcher.group(1));
 
@@ -91,7 +96,8 @@ public class EAGateHelper {
 					continue;
 				}
 
-				Matcher dm = resultDetailDmPattern.matcher(resultContents);
+				Matcher dm = HTMLPattern.getResultDetailPattern(Type.D)
+						.matcher(resultContents);
 				while (dm.find()) {
 					ResultData data = createResultData(dm, musicName);
 					if (data != null) {
@@ -101,13 +107,13 @@ public class EAGateHelper {
 			}
 		}
 
-		log.info("eAMUSEMENT から DrumMania プレーデータを読み込みました.");
+		log.info(LogMessage.loadEndFromEAGate(Type.D));
 		return list;
 	}
 
 	private static boolean cannotMatchMusicName(String resultContents,
 			String musicName) {
-		Matcher dmn = resultDetailMusicNamePattern.matcher(resultContents);
+		Matcher dmn = HTMLPattern.getResultMusicNamePattern().matcher(resultContents);
 		if (!dmn.find()) {
 			warnResult(musicName);
 			return true;
@@ -124,7 +130,7 @@ public class EAGateHelper {
 			return null;
 		}
 		String t = dm.group(1);
-		Type type = Type.getInstanceOf(t.equals("") ? "DRUM" : t);
+		Type type = Type.getInstanceOf("".equals(t) ? "DRUM" : t);
 		Difficulty difficulty = Difficulty.getInstanceOf(dm.group(2));
 		int kind = type.getKind() + difficulty.getKind();
 		Rank rank = Rank.getInstanceOf(dm.group(5));
@@ -152,14 +158,14 @@ public class EAGateHelper {
 
 	private static void warnResult(String musicName) {
 		if (log.isWarnEnabled()) {
-			log.warn(musicName + " のプレーデータが正常に読み込めません.");
+			log.warn(LogMessage.cannotLoadMusicPlayData(musicName));
 		}
 	}
 
 	private static void warnResult(String musicName, String resultContentsName) {
 		if (log.isWarnEnabled()) {
-			log.warn(musicName + " のプレーデータが正常に読み込めません. (" + resultContentsName
-					+ " を取得した模様)");
+			log.warn(LogMessage.loadWrongMusicPlayData(musicName,
+					resultContentsName));
 		}
 	}
 
@@ -171,66 +177,9 @@ public class EAGateHelper {
 	}
 
 	public static void logoutEAGate(HttpClientWrapper client) {
-		client.GET(EAGATE_LOGOUT_URL); // 読み捨て
-		log.info("eAMUSEMENT からログアウトしました.");
+		client.GET(URL.logoutEAGate());
+		log.info(LogMessage.logoutEAGateSuccessful());
 	}
-
-	private static final Pattern gfResultListPattern = Pattern
-			.compile(
-					"<div class=\"md_title_box\">\\s*?<a class=\"text_link\" href=\".*?music_detail.html\\?"
-							+ "gtype=gf&sid=2&index=(\\d+)&cat=(\\d+).*?\">" // index,category
-							+ "[\\s\\r\\n]*(.+?)[\\s\\r\\n]*</a>", // 曲名
-					Pattern.DOTALL);
-
-	private static final Pattern dmResultListPattern = Pattern
-			.compile(
-					"<div class=\"md_title_box\">\\s*?<a class=\"text_link\" href=\".*?music_detail.html\\?"
-							+ "gtype=dm&sid=2&index=(\\d+)&cat=(\\d+).*?\">" // index,category
-							+ "[\\s\\r\\n]*(.+?)[\\s\\r\\n]*</a>", // 曲名
-					Pattern.DOTALL);
-
-	@SuppressWarnings("unused")
-	private static final Pattern resultPattern = Pattern
-			.compile("([ABCDE]|SS?)[\\s\\r\\n]*/[\\s\\r\\n]*(\\d{1,3}\\.\\d{1,2}|MAX)%?");
-
-	private static final Pattern resultDetailMusicNamePattern = Pattern
-			.compile("<div class=\"live_title\">\\s*(.+?)\\s*</div>");
-
-	private static final Pattern resultDetailGfPattern = Pattern
-			.compile(
-					"<div class=\"index_md_tb gf\">.*?<font class=\"seq.*?\">\\s*(.+?)\\s*</font>[\\s\\r\\n]*/[\\s\\r\\n]*<font class=\"seq.*?\">\\s*(.+?)\\s*</font></div>"
-							+ ".*?<td class=\"idx_tb h\">プレー回数</td>.*?<td>(\\d+) 回</td>"
-							+ ".*?<td class=\"idx_tb h\">クリア回数</td>.*?<td>(\\d+) 回</td>"
-							+ ".*?<td class=\"idx_tb h\">最高ランク</td>.*?<td>([ABCDE-]|SS?) (FULL COMBO|EXCELLENT)?</td>"
-							+ ".*?<td class=\"idx_tb h\">達成率</td>.*?<td>(\\d{1,3}\\.\\d{1,2}|MAX|NO|-)%?</td>"
-							+ ".*?<td class=\"idx_tb h\">ハイスコア</td>.*?<td>(.+?)</td>"
-							+ ".*?<td class=\"idx_tb h\">MAX COMBO</td>.*?<td>(.+?)</td>",
-					Pattern.DOTALL);
-
-	private static final Pattern resultDetailDmPattern = Pattern
-			.compile(
-					"<div class=\"index_md_tb gf\">.*?<font class=\"\">\\s*(.*?)\\s*</font>[\\s\\r\\n]*<font class=\"seq.*?\">\\s*(.+?)\\s*</font></div>"
-							+ ".*?<td class=\"idx_tb h\">プレー回数</td>.*?<td>(\\d+) 回</td>"
-							+ ".*?<td class=\"idx_tb h\">クリア回数</td>.*?<td>(\\d+) 回</td>"
-							+ ".*?<td class=\"idx_tb h\">最高ランク</td>.*?<td>([ABCDE-]|SS?) (FULL COMBO|EXCELLENT)?</td>"
-							+ ".*?<td class=\"idx_tb h\">達成率</td>.*?<td>(\\d{1,3}\\.\\d{1,2}|MAX|NO|-)%?</td>"
-							+ ".*?<td class=\"idx_tb h\">ハイスコア</td>.*?<td>(.+?)</td>"
-							+ ".*?<td class=\"idx_tb h\">MAX COMBO</td>.*?<td>(.+?)</td>",
-					Pattern.DOTALL);
-
-	private static final String EAGATE_LOGIN_URL = "https://p.eagate.573.jp/gate/p/login.html";
-
-	private static final String EAGATE_INDEX_URL = "http://p.eagate.573.jp/gate/p/mypage/index.html?p=done_login";
-
-	private static final String EAGATE_LOGOUT_URL = "http://eagate.573.jp/gate/p/logout.html";
-
-	private static final String EAGATE_GF_PLAYDATA_LIST_URL = "http://p.eagate.573.jp/game/gfdm/gitadora/p/cont/play_data_tb/music.html?gtype=gf&cat=";
-
-	private static final String EAGATE_DM_PLAYDATA_LIST_URL = "http://p.eagate.573.jp/game/gfdm/gitadora/p/cont/play_data_tb/music.html?gtype=dm&cat=";
-
-	private static final String EAGATE_GF_DETAILRESULT_URL = "http://p.eagate.573.jp/game/gfdm/gitadora/p/cont/play_data_tb/music_detail.html?gtype=gf&sid=2&page=1&cat="; // &index=
-
-	private static final String EAGATE_DM_DETAILRESULT_URL = "http://p.eagate.573.jp/game/gfdm/gitadora/p/cont/play_data_tb/music_detail.html?gtype=dm&sid=2&page=1&cat="; // &index=
 
 	private static final int LOOP_COUNT = 37;
 

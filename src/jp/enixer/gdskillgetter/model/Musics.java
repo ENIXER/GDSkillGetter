@@ -3,12 +3,8 @@ package jp.enixer.gdskillgetter.model;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-
 public class Musics {
 	private static List<Music> list = new ArrayList<Music>();
-	private static final Log log = LogFactory.getLog(Musics.class);
 
 	public static List<Music> mergeTables(List<LevelData> levelTable,
 			List<ResultData> resultTable) {

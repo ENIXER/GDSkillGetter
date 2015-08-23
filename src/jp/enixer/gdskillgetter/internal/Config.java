@@ -10,26 +10,27 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import jp.enixer.gdskillgetter.util.LogMessage;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 public class Config {
-	private static Properties properties;
+	private static final Properties properties = new Properties();
 	private static final Log log = LogFactory.getLog(Config.class);
 
 	private Config() {
 	}
 
 	public static void getPropertiesFromConfig() {
-		properties = new Properties();
 		String fileName = new ConfigSearcher().search();
 		if (fileName == null) {
-			log.fatal("設定ファイルが見つかりません。");
+			log.fatal(LogMessage.cannotFindConfigFile());
 			throw new RuntimeException();
 		}
-		log.info("設定ファイル(" + fileName + ")を読み込みます。");
+		log.info(LogMessage.loadConfigFile(fileName));
 		InputStream in = Config.class.getResourceAsStream('/' + fileName);
 		try {
 			if (fileName.endsWith("xml")) {
@@ -37,9 +38,10 @@ public class Config {
 			} else if (fileName.endsWith("properties")) {
 				properties.load(in);
 			} else if (fileName.endsWith("ini")) {
-				// TODO: 独自書式の設定ファイルから設定を読み込めるようにする
+				// TODO: Be able to read the settings from the own format of the
+				// configuration file
 			} else {
-				log.error("予期しない設定ファイル名です。");
+				log.error(LogMessage.illegalConfigFileName(fileName));
 				throw new RuntimeException();
 			}
 		} catch (InvalidPropertiesFormatException e) {
@@ -55,7 +57,7 @@ public class Config {
 				e.printStackTrace();
 			}
 		}
-		log.info("設定の読み込みが完了しました。");
+		log.info(LogMessage.loadConfigSuccessful());
 	}
 
 	public static String getProxyHost() {
@@ -93,20 +95,8 @@ public class Config {
 	}
 
 	private static class ConfigSearcher {
-		/**
-		 * 設定ファイルのファイル名を表す正規表現。設定ファイル名はconfigを含む文字列で、拡張子が.xml、.properties、.ini
-		 * のいずれかになっていることを期待する。
-		 */
 		private final String PATTERN = "\\w*config\\w*(\\.xml|\\.properties|\\.ini)";
 
-		/**
-		 * 設定ファイルを探す。該当するファイルが複数存在した場合、一番最初にマッチしたファイルのファイル名を返す。
-		 * 
-		 * @author ENIXER
-		 * @return 正規表現によってマッチするファイルのうち、一番最初にマッチしたファイルのファイル名。
-		 *         マッチするファイルが存在しない場合はnullを返す。
-		 * @see #PATTERN
-		 */
 		public String search() {
 			Pattern pattern = Pattern.compile(PATTERN);
 			File root = new File("./");

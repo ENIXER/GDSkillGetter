@@ -43,19 +43,19 @@ public class Music implements Comparable<Music> {
 
 	public List<List<String>> getOutputs() {
 		List<List<String>> result = new ArrayList<List<String>>();
-		List<String> gfOutputs = results.getGfAllOutputs();
-		if (gfOutputs != null) {
-			List<String> gfResult = new ArrayList<String>();
-			gfResult.add(skillnoteId);
-			gfResult.addAll(gfOutputs);
-			result.add(gfResult);
-		}
 		List<String> dmOutputs = results.getDmAllOutputs();
 		if (dmOutputs != null) {
 			List<String> dmResult = new ArrayList<String>();
 			dmResult.add(skillnoteId);
 			dmResult.addAll(dmOutputs);
 			result.add(dmResult);
+		}
+		List<String> gfOutputs = results.getGfAllOutputs();
+		if (gfOutputs != null) {
+			List<String> gfResult = new ArrayList<String>();
+			gfResult.add(skillnoteId);
+			gfResult.addAll(gfOutputs);
+			result.add(gfResult);
 		}
 		return result;
 	}

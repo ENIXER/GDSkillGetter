@@ -2,6 +2,8 @@ package jp.enixer.gdskillgetter.internal;
 
 import java.io.IOException;
 
+import jp.enixer.gdskillgetter.util.LogMessage;
+
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
@@ -40,11 +42,11 @@ public class HttpClientWrapper {
 			HttpResponse response = client.execute(request);
 			String s = IOUtils.toString(response.getEntity().getContent(),
 					encoding);
-			log.debug(url + " を読み込んでいます。");
+			log.debug(LogMessage.loadPage(url));
 			EntityUtils.consume(response.getEntity());
 			return s;
 		} catch (IOException e) {
-			log.error(url + " の読み込みに失敗しました。");
+			log.error(LogMessage.failToLoadPage(url));
 			throw new RuntimeException(e);
 		}
 	}
@@ -57,11 +59,11 @@ public class HttpClientWrapper {
 			HttpResponse response = client.execute(post);
 			String s = IOUtils.toString(response.getEntity().getContent(),
 					encoding);
-			log.debug(url + " を読み込んでいます。");
+			log.debug(LogMessage.loadPage(url));
 			EntityUtils.consume(response.getEntity());
 			return s;
 		} catch (IOException e) {
-			log.error(url + " の読み込みに失敗しました。");
+			log.error(LogMessage.failToLoadPage(url));
 			throw new RuntimeException(e);
 		}
 	}
