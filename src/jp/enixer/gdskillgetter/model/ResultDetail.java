@@ -1,8 +1,5 @@
 package jp.enixer.gdskillgetter.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jp.enixer.gdskillgetter.types.Rank;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
@@ -39,12 +36,14 @@ public class ResultDetail implements Comparable<ResultDetail> {
 		return 0;
 	}
 
-	public List<String> toCSVString() {
-		List<String> result = new ArrayList<String>();
-		result.add(Double.toString(achievementRate));
-		result.add("");
-		result.add(Boolean.toString(isFullcombo));
-		return result;
+	public String toCSVString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(achievementRate);
+		builder.append('%');
+		builder.append('(');
+		builder.append((int) (skillpoint * 100) / 100.0);
+		builder.append(')');
+		return builder.toString();
 	}
 
 	public void merge(LevelData level, ResultData result) {
@@ -58,4 +57,11 @@ public class ResultDetail implements Comparable<ResultDetail> {
 		clearCount = result.getClearCount();
 	}
 
+	public double getAchievementRate() {
+		return achievementRate;
+	}
+
+	public boolean isFullcombo() {
+		return isFullcombo;
+	}
 }

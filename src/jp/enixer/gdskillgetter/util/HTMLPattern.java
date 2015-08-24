@@ -39,8 +39,8 @@ public final class HTMLPattern {
 				Pattern.DOTALL);
 		resultPattern = Pattern.compile(properties
 				.getProperty("resultDetailPattern"));
-		resultDetailMusicNamePattern = Pattern
-				.compile("resultMusicNamePattern");
+		resultDetailMusicNamePattern = Pattern.compile(properties
+				.getProperty("resultMusicNamePattern"));
 		levelListPattern = Pattern.compile(
 				properties.getProperty("levelListPattern"), Pattern.DOTALL);
 		levelValuePattern = Pattern.compile(properties

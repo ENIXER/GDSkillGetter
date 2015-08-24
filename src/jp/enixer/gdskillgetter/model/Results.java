@@ -4,48 +4,29 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class Results implements Comparable<Results> {
+import jp.enixer.gdskillgetter.internal.Config;
+import jp.enixer.gdskillgetter.types.Type;
+
+public class Results {
 
 	private ArrayList<Result> list = new ArrayList<Result>();
 
-	private double getSkillTargetPoint() {
-		Collections.sort(list);
-		return list.get(0).getSkillPoint();
-	}
-	
-	private Result getGfSkillTarget(){
-		Collections.sort(list);
-		for(Result result:list){
-			if(result.isGf()){
-				return result;
-			}
+	public double getSkillTargetPoint(Type type) {
+		Result result = getSkillTarget(type);
+		if (result == null) {
+			return 0;
 		}
-		return null;
+		return result.getSkillPoint();
 	}
 
-	private Result getDmSkillTarget() {
+	private Result getSkillTarget(Type type) {
 		Collections.sort(list);
-		for(Result result:list){
-			if(result.isDm()){
+		for (Result result : list) {
+			if (result.isModel(type)) {
 				return result;
 			}
 		}
 		return null;
-	}
-	
-	@Override
-	public int compareTo(Results o) {
-		if (o == null) {
-			return -1;
-		}
-		double diff = o.getSkillTargetPoint() - getSkillTargetPoint();
-		if (diff < 0) {
-			return -1;
-		}
-		if (diff > 0) {
-			return 1;
-		}
-		return 0;
 	}
 
 	public void merge(LevelData level, ResultData result) {
@@ -54,20 +35,27 @@ public class Results implements Comparable<Results> {
 		list.add(res);
 	}
 
-	public List<String> getGfAllOutputs() {
-		Result gfResult = getGfSkillTarget();
-		if(gfResult == null){
+	public List<String> getOutputs(Type type) {
+		Result target = getSkillTarget(type);
+		if (target == null) {
 			return null;
 		}
-		return gfResult.getOutputs();
-	}
-
-	public List<String> getDmAllOutputs() {
-		Result dmResult = getDmSkillTarget();
-		if(dmResult == null){
-			return null;
+		List<String> output = new ArrayList<String>(5);
+		output.add(target.getKindString());
+		output.add(target.getAchievementRate());
+		StringBuilder builder = new StringBuilder();
+		if (Config.canAddSkillInfoToComment()) {
+			for (Result result : list) {
+				if (result.isModel(type) && result != target) {
+					builder.append(result.toCSVString());
+					builder.append(", ");
+				}
+			}
 		}
-		return dmResult.getOutputs();
+		output.add(builder.length() == 0 ? "" : builder.substring(0,
+				builder.length() - 2));
+		output.add(target.isFullcombo());
+		return output;
 	}
 
 }

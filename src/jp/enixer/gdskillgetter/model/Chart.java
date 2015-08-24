@@ -1,8 +1,5 @@
 package jp.enixer.gdskillgetter.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import jp.enixer.gdskillgetter.types.Difficulty;
 import jp.enixer.gdskillgetter.types.Type;
 
@@ -60,22 +57,26 @@ public class Chart implements Comparable<Chart> {
 		return type;
 	}
 
-	public List<String> toCSVString() {
-		List<String> result = new ArrayList<String>();
-		result.add(Integer.toString(difficulty.getKind() + type.getKind()));
-		return result;
+	@Override
+	public String toString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(difficulty.toString());
+		builder.append('(');
+		builder.append(type.toString());
+		builder.append(')');
+		return builder.toString();
+	}
+
+	public int getKind() {
+		return difficulty.getKind() + type.getKind();
 	}
 
 	public static Chart getInstance(int kind) {
 		return instances[kind];
 	}
 
-	public boolean isGf() {
-		return type == Type.G || type == Type.B;
-	}
-
-	public boolean isDm() {
-		return type == Type.D;
+	public boolean isType(Type type) {
+		return this.type == type;
 	}
 
 }

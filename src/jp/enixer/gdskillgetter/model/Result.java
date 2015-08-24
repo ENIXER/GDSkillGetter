@@ -1,7 +1,6 @@
 package jp.enixer.gdskillgetter.model;
 
-import java.util.ArrayList;
-import java.util.List;
+import jp.enixer.gdskillgetter.types.Type;
 
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
@@ -28,24 +27,43 @@ public class Result implements Comparable<Result> {
 		return detail.getSkillPoint();
 	}
 
-	public List<String> getOutputs() {
-		List<String> list = new ArrayList<String>();
-		list.addAll(chart.toCSVString());
-		list.addAll(detail.toCSVString());
-		return list;
-	}
-
 	public void merge(LevelData level, ResultData result) {
 		chart = level.getChart();
 		detail.merge(level, result);
 	}
 
-	public boolean isGf() {
-		return chart.isGf();
+	public boolean isType(Type type) {
+		return chart.isType(type);
 	}
 
-	public boolean isDm() {
-		return chart.isDm();
+	public boolean isModel(Type type) {
+		switch (type) {
+		case D:
+			return isType(Type.D);
+		default:
+			return isType(Type.G) || isType(Type.B);
+		}
+	}
+
+	public String getKindString() {
+		return Integer.toString(chart.getKind());
+	}
+
+	public String getAchievementRate() {
+		return Double.toString(detail.getAchievementRate());
+	}
+
+	public String toCSVString() {
+		StringBuilder builder = new StringBuilder();
+		builder.append(chart.toString());
+		builder.append(':');
+		builder.append(' ');
+		builder.append(detail.toCSVString());
+		return builder.toString();
+	}
+
+	public String isFullcombo() {
+		return Boolean.toString(detail.isFullcombo());
 	}
 
 }

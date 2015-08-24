@@ -11,6 +11,7 @@ import jp.enixer.gdskillgetter.model.LevelData;
 import jp.enixer.gdskillgetter.model.Music;
 import jp.enixer.gdskillgetter.model.ResultData;
 import jp.enixer.gdskillgetter.model.Musics;
+import jp.enixer.gdskillgetter.types.Type;
 import jp.enixer.gdskillgetter.util.LogMessage;
 
 import org.apache.commons.logging.Log;
@@ -28,11 +29,11 @@ public class GDSkillGetter {
 		start();
 		List<LevelData> levelTable = SkillNoteHelper.loadMusics(skillnote);
 		List<ResultData> resultTable = null;
-		if (Config.canUpdateGf()) {
+		if (Config.canUpdate(Type.G)) {
 			List<ResultData> gfResults = getGFAllMusics();
 			resultTable = gfResults;
 		}
-		if (Config.canUpdateDm()) {
+		if (Config.canUpdate(Type.D)) {
 			List<ResultData> dmResults = getDMAllMusics();
 			if (resultTable == null) {
 				resultTable = dmResults;
@@ -64,8 +65,7 @@ public class GDSkillGetter {
 		if (!started) {
 			return null;
 		}
-		List<ResultData> results = EAGateHelper.getGfAllResult(eagate,
-				Config.canUpdateFullcombo());
+		List<ResultData> results = EAGateHelper.getGfAllResult(eagate);
 
 		return results;
 	}
@@ -74,8 +74,7 @@ public class GDSkillGetter {
 		if (!started) {
 			return null;
 		}
-		List<ResultData> results = EAGateHelper.getDmAllResult(eagate,
-				Config.canUpdateFullcombo());
+		List<ResultData> results = EAGateHelper.getDmAllResult(eagate);
 
 		return results;
 	}

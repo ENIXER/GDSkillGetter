@@ -41,8 +41,7 @@ public class EAGateHelper {
 		log.info(LogMessage.loginEAGateSuccessful());
 	}
 
-	public static List<ResultData> getGfAllResult(HttpClientWrapper client,
-			boolean canUpdateFullcombo) {
+	public static List<ResultData> getGfAllResult(HttpClientWrapper client) {
 		List<ResultData> list = new ArrayList<ResultData>();
 		log.info(LogMessage.loadFromEAGate(Type.G));
 
@@ -76,8 +75,7 @@ public class EAGateHelper {
 		return list;
 	}
 
-	public static List<ResultData> getDmAllResult(HttpClientWrapper client,
-			boolean canUpdateFullcombo) {
+	public static List<ResultData> getDmAllResult(HttpClientWrapper client) {
 		List<ResultData> list = new ArrayList<ResultData>();
 		log.info(LogMessage.loadFromEAGate(Type.D));
 

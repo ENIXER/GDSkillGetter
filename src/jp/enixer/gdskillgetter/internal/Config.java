@@ -10,6 +10,7 @@ import java.util.Properties;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import jp.enixer.gdskillgetter.types.Type;
 import jp.enixer.gdskillgetter.util.LogMessage;
 
 import org.apache.commons.lang3.StringUtils;
@@ -76,22 +77,34 @@ public class Config {
 		return properties.getProperty("EAGatePassword");
 	}
 
-	public static boolean canUpdateGf() {
-		String updateGuitarSkill = properties.getProperty("UpdateGuitarSkill");
-		return StringUtils.isEmpty(updateGuitarSkill)
-				|| toBoolean(updateGuitarSkill);
-	}
-
-	public static boolean canUpdateDm() {
-		String updateDrumSkill = properties.getProperty("UpdateDrumSkill");
-		return StringUtils.isEmpty(updateDrumSkill)
-				|| toBoolean(updateDrumSkill);
+	public static boolean canUpdate(Type type) {
+		String updateSkill;
+		if (type == Type.D) {
+			updateSkill = properties.getProperty("UpdateDrumSkill");
+		} else {
+			updateSkill = properties.getProperty("UpdateGuitarSkill");
+		}
+		return StringUtils.isEmpty(updateSkill) || toBoolean(updateSkill);
 	}
 
 	public static boolean canUpdateFullcombo() {
 		String updateFullcombo = properties.getProperty("UpdateFullcombo");
 		return StringUtils.isNotEmpty(updateFullcombo)
 				&& toBoolean(updateFullcombo);
+	}
+
+	public static boolean canUpdateOnlySkillTarget() {
+		String updateOnlySkillTarget = properties
+				.getProperty("UpdateOnlySkillTarget");
+		return StringUtils.isNotEmpty(updateOnlySkillTarget)
+				&& toBoolean(updateOnlySkillTarget);
+	}
+
+	public static boolean canAddSkillInfoToComment() {
+		String addSkillInfoToComment = properties
+				.getProperty("AddSkillInfoToComment");
+		return StringUtils.isNotEmpty(addSkillInfoToComment)
+				&& toBoolean(addSkillInfoToComment);
 	}
 
 	private static class ConfigSearcher {

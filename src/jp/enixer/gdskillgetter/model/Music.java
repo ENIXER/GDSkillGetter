@@ -3,10 +3,13 @@ package jp.enixer.gdskillgetter.model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Music implements Comparable<Music> {
+import jp.enixer.gdskillgetter.types.Type;
+
+public class Music {
 	private MusicName musicName = new MusicName();
 	private Results results = new Results();
 	private String skillnoteId;
+	private boolean isNew = false;
 
 	public MusicName getMusicName() {
 		return musicName;
@@ -16,20 +19,8 @@ public class Music implements Comparable<Music> {
 		this.musicName = musicName;
 	}
 
-	public Results getResults() {
-		return results;
-	}
-
 	public void setResults(Results results) {
 		this.results = results;
-	}
-
-	@Override
-	public int compareTo(Music o) {
-		if (o == null) {
-			return -1;
-		}
-		return musicName.compareTo(o.musicName);
 	}
 
 	@Override
@@ -41,23 +32,15 @@ public class Music implements Comparable<Music> {
 		return musicName.equals(music.musicName);
 	}
 
-	public List<List<String>> getOutputs() {
-		List<List<String>> result = new ArrayList<List<String>>();
-		List<String> dmOutputs = results.getDmAllOutputs();
-		if (dmOutputs != null) {
-			List<String> dmResult = new ArrayList<String>();
-			dmResult.add(skillnoteId);
-			dmResult.addAll(dmOutputs);
-			result.add(dmResult);
+	public List<String> getOutputs(Type type) {
+		List<String> result = new ArrayList<String>();
+		List<String> outputs = results.getOutputs(type);
+		if (outputs != null) {
+			result.add(skillnoteId);
+			result.addAll(outputs);
+			return result;
 		}
-		List<String> gfOutputs = results.getGfAllOutputs();
-		if (gfOutputs != null) {
-			List<String> gfResult = new ArrayList<String>();
-			gfResult.add(skillnoteId);
-			gfResult.addAll(gfOutputs);
-			result.add(gfResult);
-		}
-		return result;
+		return null;
 	}
 
 	public boolean isName(LevelData level) {
@@ -66,8 +49,17 @@ public class Music implements Comparable<Music> {
 
 	public void merge(LevelData level, ResultData result) {
 		skillnoteId = level.getSkillnoteId();
+		isNew = level.isNew();
 		musicName.merge(level, result);
 		results.merge(level, result);
+	}
+
+	public double getTargetSkillPoint(Type type) {
+		return results.getSkillTargetPoint(type);
+	}
+
+	public boolean isNew() {
+		return isNew;
 	}
 
 }
