@@ -25,38 +25,31 @@ public class CSVOutputter {
 					"utf-8"));
 			CSVPrinter printer = CSVFormat.DEFAULT.withHeader("music_id",
 					"kind", "rate", "comment", "isfc").print(writer);
-			if (Config.canUpdate(Type.D)) {
-//				Collections.sort(musics, new MusicComparator(Type.D));
-//				for (Music music : musics) {
-//					List<List<String>> outputs = music.getOutputs(Type.D);
-//					for (List<String> output : outputs)
-//						printer.printRecord(output);
-//					printer.flush();
-//				}
-			}
-			if (Config.canUpdate(Type.G)) {
-				Collections.sort(musics, new MusicComparator(Type.G));
-				int size = musics.size();
-				if (Config.canUpdateOnlySkillTarget()) {
-					size = 25;
-				}
-				int hot = 0, other = 0;
-				for (Music music : musics) {
-					if (music.isNew()) {
-						if (hot >= size) {
-							continue;
-						}
-						hot++;
-					} else {
-						if (other >= size) {
-							continue;
-						}
-						other++;
+			for (Type type : new Type[] { Type.G, Type.D }) {
+				if (Config.canUpdate(type)) {
+					Collections.sort(musics, new MusicComparator(type));
+					int size = musics.size();
+					if (Config.canUpdateOnlySkillTarget()) {
+						size = 25;
 					}
-					List<String> outputs = music.getOutputs(Type.G);
-					if (outputs != null) {
-						printer.printRecord(outputs);
-						printer.flush();
+					int hot = 0, other = 0;
+					for (Music music : musics) {
+						if (music.isNew()) {
+							if (hot >= size) {
+								continue;
+							}
+							hot++;
+						} else {
+							if (other >= size) {
+								continue;
+							}
+							other++;
+						}
+						List<String> outputs = music.getOutputs(type);
+						if (outputs != null) {
+							printer.printRecord(outputs);
+							printer.flush();
+						}
 					}
 				}
 			}

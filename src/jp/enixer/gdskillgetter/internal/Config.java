@@ -121,7 +121,7 @@ public class Config {
 					}
 				}
 			}
-			return "config.xml";
+			return null;
 		}
 	}
 

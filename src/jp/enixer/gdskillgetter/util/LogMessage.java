@@ -28,6 +28,10 @@ public final class LogMessage {
 		return properties.getProperty("startGDSkillGetter");
 	}
 
+	public static String endGDSkillGetter() {
+		return properties.getProperty("endGDSkillGetter");
+	}
+	
 	public static String cannotLoginEAGate() {
 		return properties.getProperty("cannotLoginEAGate");
 	}

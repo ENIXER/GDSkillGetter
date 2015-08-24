@@ -25,25 +25,30 @@ public class GDSkillGetter {
 	protected HttpClientWrapper skillnote;
 
 	public void run() {
-		log.info(LogMessage.startGDSkillGetter());
-		start();
-		List<LevelData> levelTable = SkillNoteHelper.loadMusics(skillnote);
-		List<ResultData> resultTable = null;
-		if (Config.canUpdate(Type.G)) {
-			List<ResultData> gfResults = getGFAllMusics();
-			resultTable = gfResults;
-		}
-		if (Config.canUpdate(Type.D)) {
-			List<ResultData> dmResults = getDMAllMusics();
-			if (resultTable == null) {
-				resultTable = dmResults;
-			} else {
-				resultTable.addAll(dmResults);
+		try {
+			log.info(LogMessage.startGDSkillGetter());
+			start();
+			List<LevelData> levelTable = SkillNoteHelper.loadMusics(skillnote);
+			List<ResultData> resultTable = null;
+			if (Config.canUpdate(Type.G)) {
+				List<ResultData> gfResults = getGFAllMusics();
+				resultTable = gfResults;
 			}
+			if (Config.canUpdate(Type.D)) {
+				List<ResultData> dmResults = getDMAllMusics();
+				if (resultTable == null) {
+					resultTable = dmResults;
+				} else {
+					resultTable.addAll(dmResults);
+				}
+			}
+			List<Music> musics = Musics.mergeTables(levelTable, resultTable);
+			CSVOutputter.output(musics);
+		} catch (Exception e) {
+		} finally {
+			log.info(LogMessage.endGDSkillGetter());
+			end();
 		}
-		List<Music> musics = Musics.mergeTables(levelTable, resultTable);
-		CSVOutputter.output(musics);
-		end();
 	}
 
 	public void start() {
