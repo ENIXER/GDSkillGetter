@@ -28,7 +28,7 @@ public class Config {
 	public static void getPropertiesFromConfig() {
 		String fileName = new ConfigSearcher().search();
 		if (fileName == null) {
-			log.fatal(LogMessage.cannotFindConfigFile());
+			log.error(LogMessage.cannotFindConfigFile());
 			throw new RuntimeException();
 		}
 		log.info(LogMessage.loadConfigFile(fileName));

@@ -42,7 +42,7 @@ public class Results {
 		}
 		List<String> output = new ArrayList<String>(5);
 		output.add(target.getKindString());
-		output.add(target.getAchievementRate());
+		output.add(target.getAchievementRateString());
 		StringBuilder builder = new StringBuilder();
 		if (Config.canAddSkillInfoToComment()) {
 			for (Result result : list) {
@@ -54,7 +54,7 @@ public class Results {
 		}
 		output.add(builder.length() == 0 ? "" : builder.substring(0,
 				builder.length() - 2));
-		output.add(target.isFullcombo());
+		output.add(target.isFullcomboString());
 		return output;
 	}
 

@@ -27,15 +27,6 @@ public class Chart implements Comparable<Chart> {
 	}
 
 	@Override
-	public boolean equals(Object anotherChart) {
-		if (anotherChart == null || !(anotherChart instanceof Chart)) {
-			return false;
-		}
-		Chart chart = (Chart) anotherChart;
-		return difficulty == chart.difficulty && type == chart.type;
-	}
-
-	@Override
 	public int compareTo(Chart o) {
 		if (o == null) {
 			return -1;
@@ -47,14 +38,6 @@ public class Chart implements Comparable<Chart> {
 			return type.compareTo(o.type);
 		}
 		return 0;
-	}
-
-	public Difficulty getDifficulty() {
-		return difficulty;
-	}
-
-	public Type getType() {
-		return type;
 	}
 
 	@Override

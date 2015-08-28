@@ -27,6 +27,7 @@ public class EAGateHelper {
 			.getName() + ".Result");
 
 	public static void loginEAGate(HttpClientWrapper client) {
+		assert client != null;
 		String username = Config.getEAGateUsername();
 		String password = Config.getEAGatePassword();
 		client.GET(URL.loginEAGate());
@@ -41,6 +42,40 @@ public class EAGateHelper {
 		log.info(LogMessage.loginEAGateSuccessful());
 	}
 
+	public static List<ResultData> getAllResult(HttpClientWrapper client, Type type){
+		List<ResultData> list = new ArrayList<ResultData>();
+		log.info(LogMessage.loadFromEAGate(type));
+
+		for (int i = 0; i < LOOP_COUNT; i++) {
+			String contents = client.GET(URL.EAGatePlaydataList(type) + i);
+			Matcher gfResultListMatcher = HTMLPattern.getResultListPattern(
+					type).matcher(contents);
+			while (gfResultListMatcher.find()) {
+				String musicName = gfResultListMatcher.group(3);
+
+				String resultContents = client.GET(URL.EAGateDetailResultList(type)
+						+ gfResultListMatcher.group(2) + "&index="
+						+ gfResultListMatcher.group(1));
+
+				if (cannotMatchMusicName(resultContents, musicName)) {
+					continue;
+				}
+
+				Matcher dm = HTMLPattern.getResultDetailPattern(type)
+						.matcher(resultContents);
+				while (dm.find()) {
+					ResultData data = createResultData(dm, musicName);
+					if (data != null) {
+						list.add(data);
+					}
+				}
+			}
+		}
+
+		log.info(LogMessage.loadEndFromEAGate(type));
+		return list;
+	}
+	
 	public static List<ResultData> getGfAllResult(HttpClientWrapper client) {
 		List<ResultData> list = new ArrayList<ResultData>();
 		log.info(LogMessage.loadFromEAGate(Type.G));

@@ -49,7 +49,7 @@ public class Result implements Comparable<Result> {
 		return Integer.toString(chart.getKind());
 	}
 
-	public String getAchievementRate() {
+	public String getAchievementRateString() {
 		return Double.toString(detail.getAchievementRate());
 	}
 
@@ -62,7 +62,7 @@ public class Result implements Comparable<Result> {
 		return builder.toString();
 	}
 
-	public String isFullcombo() {
+	public String isFullcomboString() {
 		return Boolean.toString(detail.isFullcombo());
 	}
 
